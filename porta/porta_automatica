@@ -1,0 +1,45 @@
+#include <Servo.h> //biblioteca para utilizar o micro servo 9g
+#define SERVO 5 //difine a porta digital 5 para o servo
+
+int pos; //variavel do posicionamento do braço de servo
+int pinoledverm = 7; //Pino ligado ao led vermelho
+int pinoledverd = 10; //Pino ligado ao led azul
+int pinoPir = 3;  //Pino ligado ao sensor PIR (sensor de movimento)
+int acionamento;  //Variavel para guardar valor do sensor de movimento
+
+Servo servo; //declara a variavel do tipo "Servo"
+
+void setup(){
+  servo.attach(SERVO);
+  pinMode(pinoledverm, OUTPUT); //Define pino como saida
+  pinMode(pinoledverd, OUTPUT); //Define pino como saida
+  pinMode(pinoPir, INPUT);   //Define pino sensor como entrada
+  servo.write(0); //posicao inicial do servo
+  Serial.begin(9600);
+}
+
+void loop(){
+  
+  acionamento = digitalRead(pinoPir); //Le o valor do sensor PIR
+  Serial.println(acionamento);
+  if (acionamento == 1){  //se detectar um movimento no sensor
+    digitalWrite(pinoledverm, 0); //desliga o led vermelho
+    digitalWrite(pinoledverd, 1); //liga o led verde
+    for (pos = 0; pos <= 90; pos += 1) { // diz ao servo para andar 90 graus
+    	servo.write(pos); // diz ao servo para ir até a posição descrita na variável 'pos'
+      Serial.println(pos);
+    	delay(15); // espera 15 milissegundos para andar 1 grau no braco
+  	}
+  	delay(10000); // mantem a "porta" aberta por 10 segundos
+  	for (pos = 90; pos >= 0; pos -= 1) { // diz ao servo para retornar a posição inicial    	
+    	servo.write(pos);
+      Serial.println(pos);
+    	delay(15); // espera 15 milissegundos para andar 1 grau no braco
+  	}
+    
+ } else { //enquanto nao detecta um movimento, aciona o led vermelho
+ 	  digitalWrite(pinoledverm, 1);
+    digitalWrite(pinoledverd, 0);
+ }
+}
+//------------FIM DO PROGRAMA------------
